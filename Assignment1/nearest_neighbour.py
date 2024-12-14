@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 
 def gensmallm(x_list: list, y_list: list, m: int):
@@ -138,7 +138,6 @@ def evaluate_knn(k_values, train_data, train_classes, test_data, sample_sizes=No
                 "min_error": np.min(errors),
                 "max_error": np.max(errors)
             }
-
     return results
 
 def plot_results(results, x_label, y_label, title, group_by=None):
@@ -183,7 +182,7 @@ if __name__ == '__main__':
     test_data = [data[f'test{i}'] for i in classes]
     x_test, y_test = gensmallm(test_data, classes, sum(len(test) for test in test_data))
     k_values = range(1,12)
-
+    
     # Run algorithm
     print('Running question 2.a:')
     different_sample_size_results = evaluate_knn([1],train_data, classes, (x_test, y_test), range(1, 101, 10))
