@@ -83,7 +83,7 @@ def evaluate_svm(sample_size, l_array):
     return train_results, test_results
 
 
-def plot_results(train_results, test_results, sample_size):
+def plot_results(train_results, test_results, train_results_large_sample, test_results_large_sample):
     # Create a results directory if it doesn't exist
     results_dir = "Results"
     os.makedirs(results_dir, exist_ok=True)
@@ -99,6 +99,13 @@ def plot_results(train_results, test_results, sample_size):
     test_means = [test_results[l]["mean"] for l in l_values]
     test_min_errors = [test_results[l]["min_error"] for l in l_values]
     test_max_errors = [test_results[l]["max_error"] for l in l_values]
+
+    l_values_large = list(train_results_large_sample.keys())  # List of lambda values
+    l_values_large_float = [float(l) for l in l_values_large]  # Convert to floats for better plotting
+
+    train_means_large = [train_results_large_sample[l]["mean"] for l in l_values_large]
+
+    test_means_large = [test_results_large_sample[l]["mean"] for l in l_values_large]
 
     # Calculate error bars
     train_error_bars = [
@@ -117,26 +124,36 @@ def plot_results(train_results, test_results, sample_size):
     # Plot the results
     plt.figure(figsize=(10, 6))
     
-    # Plot train results
+    # Plot small experiment train results
     plt.errorbar(
-        l_values_float, train_means, yerr=train_error_bars, fmt="-o" if sample_size==100 else 'o', label="Train Error"
+        l_values_float, train_means, yerr=train_error_bars, fmt="-x", label="Train Error (small sample)"
     )
     
-    # Plot test results
+    # Plot small experiment test results
     plt.errorbar(
-        l_values_float, test_means, yerr=test_error_bars, fmt="-o" if sample_size==100 else 'o', label="Test Error"
+        l_values_float, test_means, yerr=test_error_bars, fmt="-x", label="Test Error (small sample)"
+    )
+
+    # Plot large experiment train results
+    plt.errorbar(
+        l_values_large_float, train_means_large, fmt='o', label="Train Error (large sample)"
+    )
+    
+    # Plot large experiment test results
+    plt.errorbar(
+        l_values_large_float, test_means_large, fmt='o', label="Test Error (large sample)"
     )
 
     # Add labels and legend
     plt.xlabel("Lambda (log scale)")
     plt.ylabel("Error")
     plt.xscale("log")  # Use a log scale for lambda
-    plt.title("Train and Test Errors with Error Bars")
+    plt.title("Train and Test Errors with Error Bars, both experiments")
     plt.legend()
     plt.grid(True)
 
     # Save the plot
-    plt.savefig(os.path.join(results_dir, f"train_test_errors_{sample_size}_samples.png"))
+    plt.savefig(os.path.join(results_dir, f"train_test_errors_both_experiments.png"))
     plt.show()
         
         
@@ -189,10 +206,9 @@ if __name__ == '__main__':
     #exe 1:
     simple_test()
     #exe 2:
-    #small experiment:
-    plot_results(*evaluate_svm(100,[10**n for n in range(-1,12,2)]),100)
-    #large experiment:
-    plot_results(*evaluate_svm(1000,[10**n for n in [1,3,5,8]]),1000)
+    #Both experiment:
+    plot_results(*evaluate_svm(100,[10**n for n in range(-1,12,2)]),*evaluate_svm(1000,[10**n for n in [1,3,5,8]]))
+  
 
 
     
