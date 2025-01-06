@@ -158,8 +158,8 @@ def plot_results(train_results, test_results, train_results_large_sample, test_r
         
         
 def calc_error(x,y,w):
-    y_pred = [np.sign(x[i] @ w) for i in range(x.shape[0])]
-    error = np.mean(y_pred != y)
+    y_pred = np.sign(x @ w)
+    error = np.mean(y_pred.flatten() != y.flatten())
 
     return error
      
